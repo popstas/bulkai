@@ -1,3 +1,11 @@
+Fork of BulkAI attended to be used as a translator for Obsidian markdown project.
+
+## Differences:
+- Added `--lang` and `--glossary-file`
+- Translate filenames and directories too
+- Preserve translated files between runs, storing them in a lowdb json file
+- Ability to manually translate files
+
 # BulkAI: Revolutionize Your Markdown Processing with the Power of OpenAI
 
 [![npm version](https://badge.fury.io/js/bulkai.svg)](https://www.npmjs.com/package/bulkai)
@@ -26,6 +34,8 @@ npx bulkai -p prefix.md -s suffix.md -i ./input -o ./output -f -H -e .md,.txt
 -   **`-p, --prefix-file <path>`**: Path to the file containing the prefix to add to each file (e.g., `prefix.md`).
 -   **`-s, --suffix-file <path>`**: Path to the file containing the suffix to add to each file (e.g., `suffix.md`).
 -   **`-i, --input-dir <path>`**: Path to the input directory containing files to process.
+-   **`-l, --lang <lang>`**: Target language for translation.
+-   **`-g, --glossary-file <path>`**: File containing translation glossary.
 -   **`-o, --output-dir <path>`**: Path to the output directory where processed files will be saved.
 -   **`-f, --force`**: Force overwrite of existing files in the output directory.
 -   **`-H, --hugo`**: Enable Hugo front matter processing.

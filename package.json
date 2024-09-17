@@ -21,6 +21,7 @@
   "dependencies": {
     "commander": "^12.1.0",
     "fs-extra": "^11.2.0",
+    "lowdb": "^7.0.1",
     "node-recursive-directory": "^1.2.3",
     "openai": "^4.55.4"
   },
