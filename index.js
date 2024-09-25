@@ -9,6 +9,7 @@ import {Low} from "lowdb";
 import {JSONFile} from "lowdb/node";
 
 const model = "gpt-4o-mini";
+const isVerbose = false;
 const program = new Command();
 
 program
@@ -106,9 +107,7 @@ function getFilenameTranslationCache(filePath) {
 }
 
 async function getOutputPath(filePath) {
-  let outputRelPath = path.resolve(filePath)
-    .replace(inputPath, '')
-    .replace(/^[/\\]+/, '');
+  let outputRelPath = getOutputRelPath(filePath);
   let outputAbsPath = path.join(outputDir, outputRelPath);
   if (!targetLang) return outputAbsPath;
 
@@ -142,18 +141,28 @@ async function getOutputPath(filePath) {
   return outputAbsPath;
 }
 
+function getOutputRelPath(filePath) {
+  return path.resolve(filePath)
+    .replace(outputDir, '')
+    .replace(inputPath, '')
+    .replace(/^[/\\]+/, '');
+}
+
 async function processFile(filePath, outputDir, force, hugo) {
   const outputAbsPath = await getOutputPath(filePath);
+  const outputRelPath = getOutputRelPath(outputAbsPath);
 
   if (!force && await fs.pathExists(outputAbsPath)) {
-    console.log(`File already exists: ${outputAbsPath}`);
+    if (isVerbose) console.log(`File already exists: ${outputAbsPath}`);
     return;
   }
 
   const outputAbsDir = path.dirname(outputAbsPath);
   await fs.ensureDir(outputAbsDir);
 
-  console.log(`Processing: ${filePath}`);
+  // console.log without newline
+  process.stdout.write(`${targetLang ? 'Translating' : 'Processing'}: ${outputRelPath}`);
+
   let fileContent = await fs.readFile(filePath, 'utf8');
 
   // Replace links according to translated filenames
@@ -202,7 +211,7 @@ async function processFile(filePath, outputDir, force, hugo) {
   // Write the AI's response to the output directory
   await fs.outputFile(outputAbsPath, fileContent);
 
-  console.log(`Processed and saved: ${outputAbsPath}`);
+  console.log(`, saved: ${outputAbsPath}`);
 }
 
 // check if filePath contains excluded file or directory
@@ -217,13 +226,13 @@ async function main() {
   for (const file of files) {
     if (!extensions.includes(path.extname(file))) continue;
     if (isExcluded(file)) {
-      console.log(`Excluded: ${file}`);
+      if (isVerbose) console.log(`Excluded: ${file}`);
       continue;
     }
     filesToProcess.push(file);
   }
 
-  console.log(`Processing ${filesToProcess.length} files...`);
+  if (isVerbose) console.log(`Processing ${filesToProcess.length} files...`);
   for (const file of filesToProcess) {
     await processFile(file, outputDir, options.force, options.hugo);
   }
